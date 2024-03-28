@@ -32,10 +32,9 @@ import javax.activation.*;
  * <a href="https://ladedu.com/how-to-create-an-app-password-for-yahoo-pop-and-imap/">
  * Manage Yahoo app password</a>
  *
- * @author David Cruz Jim&eacute;nez
  * @author Daniel Torres Silva
- * @version 2.0
- * @since 1.0
+ * @version 2.1
+ * @since 2.0
  */
 public class SendEmail {
 
@@ -55,6 +54,7 @@ public class SendEmail {
     private static String attachFile;
     private static String bodyMessage;
     private static String priority;
+    private static String fileLogPath;
 
     /**
      * No se requieren especificar datos del constructor.
@@ -175,19 +175,19 @@ public class SendEmail {
                 tr.sendMessage(message, message.getAllRecipients());
                 tr.close();
 
-                Singleton.getInstance().writeToFile("Correo enviado satisfactoriamente.", true);
+                Singleton.getInstance().writeToFile("Correo enviado satisfactoriamente.", true, fileLogPath);
                 System.out.println("Correo enviado satisfactoriamente.");
             } catch (MailConnectException mce) {
                 System.out.println("Error: \r\n" + mce.getMessage());
-                Singleton.getInstance().writeToFile("[Error]: \r\n" + mce, true);
+                Singleton.getInstance().writeToFile("[Error]: \r\n" + mce, true, fileLogPath);
             } catch (MessagingException mex) {
                 System.out.println(mex);
-                Singleton.getInstance().writeToFile("[Error]: \r\n" + mex, true);
+                Singleton.getInstance().writeToFile("[Error]: \r\n" + mex, true, fileLogPath);
             }
 
         } else {
             System.out.println("Error: " + error);
-            Singleton.getInstance().writeToFile("[Error]: " + error, true);
+            Singleton.getInstance().writeToFile("[Error]: " + error, true, fileLogPath);
         }
 
     }
@@ -241,7 +241,10 @@ public class SendEmail {
      * para desactivar)</li>
      * <li>parametros[13]* Puerto de servicio</li>
      * <li>parametros[14] Importancia del correo (1 importante, 3 normal, 5
-     * bajo)</li></ol>
+     * bajo)</li>
+     * <li>parametros[15]* Ruta de escritura del log de registros incluyendo
+     * nombre del archivo log de su preferencia</li>
+     * </ol>
      *
      * @param parametros Array de tipo {@code String} el cual se especifica la
      * secuencia de datos a ingresar
@@ -273,12 +276,11 @@ public class SendEmail {
                 + "parametros[12] Correo seguro (1 para habilitar TLS SSL Secure o 0\n"
                 + "               para desactivar)\n"
                 + "parametros[13] Puerto de servicio\n"
-                + "parametros[14] Importancia del correo (1 importante, 3 normal, 5 bajo)\n";
-        Singleton.getInstance().writeToFile(new Date() + "", false);
-        Singleton.getInstance().writeToFile("Num. parametros recibidos: " + parametros.length, true);
+                + "parametros[14] Importancia del correo (1 importante, 3 normal, 5 bajo)\n"
+                + "parametros[15] Ruta de escritura del log de registros\n";
 
         //Evalua si todos los parametros son especificados
-        if (parametros.length != 15) {
+        if (parametros.length < 15) {
             error = "Especificar los argumentos requeridos" + param;
         } else {
             serverMailHost = parametros[0].trim();
@@ -296,6 +298,11 @@ public class SendEmail {
             attachFile = parametros[10].replace(',', ';').trim();
             bodyMessage = parametros[11];
             priority = parametros[14].matches("[0-9]+") ? parametros[14] : "3";
+            try {
+                fileLogPath = (!parametros[15].isEmpty() && parametros[15].matches(".+\\.[a-zA-Z]{3,}$")) ? parametros[15] : null;
+            } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
+                fileLogPath = null;
+            }
             if (serverMailHost.isEmpty()) {
                 error = "Especificar Host de correo";
             } else if (serverMailUserEmail.isEmpty()) {
@@ -310,6 +317,10 @@ public class SendEmail {
                 ok = true;
             }
         }
+        
+        Singleton.getInstance().writeToFile(new Date() + "", false, fileLogPath);
+        Singleton.getInstance().writeToFile("Num. parametros recibidos: " + parametros.length, true, fileLogPath);
+        
         return ok;
     }
 

@@ -15,10 +15,9 @@ import java.util.logging.Logger;
  * escribe en un log externo. El prop&oacute;sito de &eacute;ste log es poder
  * visualizar los mensajes output si no se ejecuta por l&iacute;nea de comandos.
  *
- * @author David Cruz Jim&eacute;nez
  * @author Daniel Torres Silva
- * @version 2.0
- * @since 1.0
+ * @version 2.1
+ * @since 2.0
  */
 public class Singleton {
 
@@ -41,12 +40,14 @@ public class Singleton {
      * @param apnd Si se especifica <code>true</code>, la siguiente cadena
      * ser&aacute; escrita debajo del resto de datos existentes sin crear un
      * flujo nuevo
+     * @param fileLogPath Ruta de estructura para el log de mensajes, si se omite
+     * tomará la ruta por defecto dentro del entorno de ejecución
      * @see java.io.FileOutputStream
      * @see java.io.File
      * @see java.io.PrintWriter
      */
-    protected synchronized void writeToFile(String str, boolean apnd) {
-        try (PrintWriter out = new PrintWriter(new FileOutputStream(new File("SendEmail.log"), apnd))) {
+    protected synchronized void writeToFile(String str, boolean apnd, String fileLogPath) {
+        try (PrintWriter out = new PrintWriter(new FileOutputStream(new File((fileLogPath == null) ? "SendEmail.log" : fileLogPath), apnd))) {
             out.println(str);
             out.flush();
             out.close();
