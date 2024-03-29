@@ -242,7 +242,7 @@ public class SendEmail {
      * <li>parametros[13]* Puerto de servicio</li>
      * <li>parametros[14] Importancia del correo (1 importante, 3 normal, 5
      * bajo)</li>
-     * <li>parametros[15]* Ruta de escritura del log de registros incluyendo
+     * <li>parametros[15] Ruta de escritura del log de registros incluyendo
      * nombre del archivo log de su preferencia</li>
      * </ol>
      *
