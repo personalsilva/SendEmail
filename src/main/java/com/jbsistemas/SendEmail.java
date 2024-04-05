@@ -54,7 +54,7 @@ public class SendEmail {
     private static String attachFile;
     private static String bodyMessage;
     private static String priority;
-    private static String fileLogPath;
+    private static String customLogName;
 
     /**
      * No se requieren especificar datos del constructor.
@@ -175,19 +175,19 @@ public class SendEmail {
                 tr.sendMessage(message, message.getAllRecipients());
                 tr.close();
 
-                Singleton.getInstance().writeToFile("Correo enviado satisfactoriamente.", true, fileLogPath);
+                Singleton.getInstance().writeToFile("Correo enviado satisfactoriamente.", true, customLogName);
                 System.out.println("Correo enviado satisfactoriamente.");
             } catch (MailConnectException mce) {
                 System.out.println("Error: \r\n" + mce.getMessage());
-                Singleton.getInstance().writeToFile("[Error]: \r\n" + mce, true, fileLogPath);
+                Singleton.getInstance().writeToFile("[Error]: \r\n" + mce, true, customLogName);
             } catch (MessagingException mex) {
                 System.out.println(mex);
-                Singleton.getInstance().writeToFile("[Error]: \r\n" + mex, true, fileLogPath);
+                Singleton.getInstance().writeToFile("[Error]: \r\n" + mex, true, customLogName);
             }
 
         } else {
             System.out.println("Error: " + error);
-            Singleton.getInstance().writeToFile("[Error]: " + error, true, fileLogPath);
+            Singleton.getInstance().writeToFile("[Error]: " + error, true, customLogName);
         }
 
     }
@@ -242,8 +242,7 @@ public class SendEmail {
      * <li>parametros[13]* Puerto de servicio</li>
      * <li>parametros[14] Importancia del correo (1 importante, 3 normal, 5
      * bajo)</li>
-     * <li>parametros[15] Ruta de escritura del log de registros incluyendo
-     * nombre del archivo log de su preferencia</li>
+     * <li>parametros[15] Nombre del log personalizado</li>
      * </ol>
      *
      * @param parametros Array de tipo {@code String} el cual se especifica la
@@ -277,7 +276,7 @@ public class SendEmail {
                 + "               para desactivar)\n"
                 + "parametros[13] Puerto de servicio\n"
                 + "parametros[14] Importancia del correo (1 importante, 3 normal, 5 bajo)\n"
-                + "parametros[15] Ruta de escritura del log de registros\n";
+                + "parametros[15] Nombre personalizado del log\n";
 
         //Evalua si todos los parametros son especificados
         if (parametros.length < 15) {
@@ -299,9 +298,9 @@ public class SendEmail {
             bodyMessage = parametros[11];
             priority = parametros[14].matches("[0-9]+") ? parametros[14] : "3";
             try {
-                fileLogPath = (!parametros[15].isEmpty() && parametros[15].matches(".+\\.[a-zA-Z]{3,}$")) ? parametros[15] : null;
+                customLogName = (!parametros[15].isEmpty()) ? parametros[15] : null;
             } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
-                fileLogPath = null;
+                customLogName = null;
             }
             if (serverMailHost.isEmpty()) {
                 error = "Especificar Host de correo";
@@ -318,8 +317,8 @@ public class SendEmail {
             }
         }
         
-        Singleton.getInstance().writeToFile(new Date() + "", false, fileLogPath);
-        Singleton.getInstance().writeToFile("Num. parametros recibidos: " + parametros.length, true, fileLogPath);
+        Singleton.getInstance().writeToFile(new Date() + "", false, customLogName);
+        Singleton.getInstance().writeToFile("Num. parametros recibidos: " + parametros.length, true, customLogName);
         
         return ok;
     }

@@ -40,14 +40,14 @@ public class Singleton {
      * @param apnd Si se especifica <code>true</code>, la siguiente cadena
      * ser&aacute; escrita debajo del resto de datos existentes sin crear un
      * flujo nuevo
-     * @param fileLogPath Ruta de estructura para el log de mensajes, si se omite
-     * tomará la ruta por defecto dentro del entorno de ejecución
+     * @param customLogName Nombre personalizado del log, si no se especifica
+     * se asume SendEmail.log
      * @see java.io.FileOutputStream
      * @see java.io.File
      * @see java.io.PrintWriter
      */
-    protected synchronized void writeToFile(String str, boolean apnd, String fileLogPath) {
-        try (PrintWriter out = new PrintWriter(new FileOutputStream(new File((fileLogPath == null) ? "SendEmail.log" : fileLogPath), apnd))) {
+    protected synchronized void writeToFile(String str, boolean apnd, String customLogName) {
+        try (PrintWriter out = new PrintWriter(new FileOutputStream(new File((customLogName == null) ? "SendEmail.log" : customLogName + ".log"), apnd))) {
             out.println(str);
             out.flush();
             out.close();
